@@ -1,0 +1,199 @@
+Automatic Keyphrase Extraction: A Survey of the State of the Art 
+
+* While automatic keyphrase extraction has been examined extensively, state-of-the- art performance on this task is still much lower than that on many core natural language processing tasks. We present a survey of the state of the art in automatic keyphrase extraction, examining the major sources of errors made by existing systems and discussing the challenges ahead. 
+
+* Automatic keyphrase extraction concerns “the au- tomatic selection of important and topical phrases from the body of a document” 
+
+
+
+Length 
+
+* The difficulty of the task increases with the length of the input document as longer documents yield more candidate keyphrases (i.e., phrases that are eligible to be keyphrases (see Section 3.1)). 
+
+* Structural consistency In a structured doc- ument, there are certain locations where a keyphrase is most likely to appear. 
+
+
+
+Topic change 
+
+* An observation commonly ex- ploited in keyphrase extraction from scientific ar- ticles and news articles is that keyphrases typically appear not only at the beginning (Witten et al., 1999) but also at the end (Medelyan et al., 2009) of a document. 
+
+
+
+Topic correlation 
+
+* Another observation com- monly exploited in keyphrase extraction from scientific articles and news articles is that the keyphrases in a document are typically related to each other (Turney, 2003; Mihalcea and Tarau, 2004). 
+* The presence of uncorrelated topics implies that it may no longer be possible to exploit relatedness and therefore increases the difficulty of keyphrase extraction. 
+
+
+
+
+Keyphrase Extraction Approaches 
+
+* A keyphrase extraction system typically operates in two steps: (1) extracting a list of words/phrases that serve as candidate keyphrases using some heuristics (Section 3.1); and (2) determining which of these candidate keyphrases are correct keyphrases using supervised (Section 3.2) or un- supervised (Section 3.3) approaches. 
+
+
+
+Selecting Candidate Words and Phrases 
+
+* As noted before, a set of phrases and words is typically extracted as candidate keyphrases using heuristic rules. These rules are designed to avoid spurious instances and keep the number of candidates to a minimum.
+* Typical heuristics include 
+    * (1) using a stop word list to remove stop words , 
+    * (2) allowing words with certain part- of-speech tags (e.g., nouns, adjectives, verbs) to be candidate keywords, 
+    * (3) allowing n-grams that appear in Wikipedia article titles to be candidates
+    * (4) extracting n-grams or noun phrases that satisfy pre-defined lexico-syntactic pattern(s). 
+
+
+
+Supervised Approaches 
+
+Task Reformulation 
+
+* Early supervised approaches to keyphrase extraction recast this task as a binary classification problem 
+* Keyphrases and non-keyphrases are used to generate positive and negative examples, respectively. 
+* Different learning algorithms have been used to train this classifier, including
+    * na ̈ıve Bayes 
+    * bagging
+    * boosting 
+    * maximum entropy  multi-layer perceptron 
+    * support vector machines 
+ 
+* Recasting keyphrase extraction as a classification problem has its weaknesses, however. 
+* Recall that the goal of keyphrase extraction is to identify the most representative phrases for a document.
+    * In other words, if a candidate phrase c1 is more representative than another candidate phrase c2, c1 should be preferred to c2. 
+    * Note that a binary clas- sifier classifies each candidate keyphrase indepen- dently of the others, and consequently it does not allow us to determine which candidates are better than the others.
+* Motivated by this observation, Jiang et al. (2009) propose a ranking approach to keyphrase extraction, where the goal is to learn a ranker to rank two candidate keyphrases. 
+    * This pairwise ranking approach therefore introduces competition between candidate keyphrases, and has been shown to significantly outperform KEA, a popular supervised baseline that adopts the traditional supervised classification approach 
+
+
+Features 
+
+Within-Collection Features 
+
+* Within-collection features are computed based solely on the training documents. 
+    * Statistical features are computed based on statistical information gathered from the training documents 
+        * tf*idf 
+        * the distance of a phrase, is defined as the number of words preceding its first occurrence normalized by the number of words in the document. 
+        * supervised keyphraseness, encodes the number of times a phrase appears as a keyphrase in the training set. 
+        * phrase length 
+        * spread
+    * Structural features encode how different instances of a candidate keyphrase are located in different parts of a document. 
+    * Syntactic features encode the syntactic pat- terns of a candidate keyphrase. 
+        * However, ablation studies conducted on web pages reveal that syntactic features are not useful for keyphrase extraction in the presence of other feature types. 
+
+External Resource-Based Features 
+
+* External resource-based features are computed based on information gathered from resources other than the training documents, such as lex- ical knowledge bases (e.g., Wikipedia) or the Web, with the goal of improving keyphrase extraction performance by exploiting external knowledge. 
+    * Wikipedia-based keyphraseness is computed as a candidate’s document frequency multiplied by the ratio of the number of Wikipedia articles where the candidate appears as a link to the number of articles where it appears. 
+    * Yih et al. (2006) employ a feature that en- codes whether a candidate keyphrase appears in the query log of a search engine, exploiting the ob- servation that a candidate is potentially important if it was used as a search query. 
+
+
+
+Unsupervised Approaches 
+
+Graph-Based Ranking 
+
+* Traditionally, the importance of a candidate has often been defined in terms of how related it is to other candidates in the document. 
+* Infor- mally, a candidate is important if it is related to 
+    * (1) a large number of candidates 
+    * (2) candidates that are important  
+* Researchers have computed relatedness between candidates using co-occurrence counts and semantic relatedness, and represented the relatedness information collected from a document as a graph.
+* The basic idea behind a graph-based approach is to build a graph from the input document and rank its nodes according to their importance using a graph-based ranking method 
+* TextRank is one of the most well-known graph-based approaches to keyphrase extraction. 
+
+
+Topic-Based Clustering 
+
+* Grouping the candidate keyphrases in a document into topics, such that each topic is composed of all and only those candidate keyphrases that are related to that topic .
+* There are several motivations behind this topic-based clustering approach. 
+    * First, a keyphrase should ideally be relevant to one or more main topic(s) discussed in a document. 
+    * Second, the extracted keyphrases should be comprehensive in the sense that they should cover all the main topics in a document 
+* KeyCluster Liu et al. (2009b) adopt a clustering-based approach (henceforth KeyCluster) that clusters semantically similar candidates using Wikipedia and co-occurrence-based statistics. 
+* Topical PageRank (TPR) runs Tex- tRank multiple times for a document, once for each of its topics induced by a Latent Dirichlet Al- location (Blei et al., 2003). 
+    * TPR performs significantly better than both tf*idf and TextRank on the DUC-2001 and Inspec datasets. 
+* CommunityCluster gives more weight to more important topics, but unlike TPR, it extracts all candidate keyphrases from an important topic, assuming that a candidate that receives little focus in the text should still be extracted as a keyphrase as long as it is related to an important topic. 
+    * CommunityCluster yields much better recall (without losing precision) than extractors such as tf*idf, TextRank, and the Yahoo! term extractor. 
+
+
+Language Modeling 
+
+* Many existing approaches have a separate, heuristic module for extracting candidate keyphrases prior to keyphrase ranking/extraction. In contrast, Tomokiyo and Hurst (2003) propose an approach (henceforth LMA) that combines these two steps. 
+    * LMA scores a candidate keyphrase based on two features, namely, 
+        * phraseness (i.e., the ex- tent to which a word sequence can be treated as a phrase)
+        *  informativeness (i.e., the extent to which a word sequence captures the central idea of the document it appears in). 
+        * Intuitively, a phrase that has high scores for phraseness and informa- tiveness is likely to be a keyphrase. 
+        * These feature values are estimated using language models (LMs) trained on a foreground corpus and a background corpus. 
+            * The foreground corpus is composed of the set of documents from which keyphrases are to be extracted. 
+            * The background corpus is a large corpus that encodes general knowledge about the world (e.g., the Web). 
+        * A unigram LM and an n- gram LM are constructed for each of these two corpora 
+        * Phraseness, defined using the foreground LM, is calculated as the loss of information incurred as a result of assuming a unigram LM (i.e., conditional independence among the words of the phrase) instead of an n-gram LM (i.e., the phrase is drawn from an n-gram LM) 
+        * Informativeness is computed as the loss that results because of the assumption that the candidate is sampled from the background LM rather than the foreground LM. 
+        * The loss values are computed using Kullback-Leibler divergence. Candidates are ranked according to the sum of these two feature values.  
+    * In sum, LMA uses a language model rather than heuristics to identify phrases, and relies on the language model trained on the background corpus to determine how “unique” a candidate keyphrase is to the domain represented by the foreground corpus. The more unique it is to the foreground’s do- main, the more likely it is a keyphrase for that domain.
+    * The use of a background corpus to identify candidates that are unique to the foreground’s domain is a unique aspect of this approach. 
+
+
+
+Evaluation 
+
+Evaluation Metrics 
+
+* To score the output of a keyphrase extraction system, the typical approach, which is also adopted by the SemEval-2010 shared task on keyphrase extraction, is (1) to create a mapping between the keyphrases in the gold standard and those in the system output using exact match, and then (2) score the output using evaluation metrics such as precision (P), recall (R), and F-score (F). 
+    * Conceivably, exact match is an overly strict condition, considering a predicted keyphrase incorrect even if it is a variant of a gold keyphrase. 
+* Human evaluation has been suggested as a possibility, but it is time- consuming and expensive. 
+* For this reason, re- searchers have experimented with two types of automatic evaluation metrics. 
+    * The first type of metrics addresses the problem with exact match. These metrics reward a partial match between a predicted keyphrase and a gold keyphrase (i.e., overlapping n-grams) and are commonly used in machine translation (MT) and summarization evaluations. They include BLEU, METEOR, NIST, and ROUGE. 
+* The second type of metrics focuses on how a system ranks its predictions. Given that two sys- tems A and B have the same number of correct predictions, binary preference measure (Bpref) and mean reciprocal rank (MRR) (Liu et al., 2010) will award more credit to A than to B if the ranks of the correct predictions in A’s output are higher than those in B’s output. 
+* R-precision (Rp) is an IR metric that focuses on ranking: given a document with n gold keyphrases, it computes the precision of a system over its n highest-ranked candidates. 
+    * The motivation behind the design of Rp is simple: a system will achieve a perfect Rp value if it ranks all the keyphrases above the non-keyphrases. 
+
+
+The State of the Art 
+
+* Table 2 lists the best scores on some popular evaluation datasets and the corresponding systems. For example, the best F-scores on the Inspec test set, the DUC-2001 dataset, and the SemEval-2010 test set are 45.7, 31.7, and 27.5, respectively. 
+￼
+* F-scores decrease as document length increases. These results are consistent with the observation we made in Section 2 that it is more difficult to extract keyphrases correctly from longer documents. 
+* Recent unsupervised approaches have rivaled their supervised counterparts in performance. For example, KP-Miner, an unsupervised system, ranked third in the SemEval-2010 shared task with an F-score of 25.2, which is comparable to the best supervised system scoring 27.5 
+
+
+
+Analysis
+
+Error Analysis 
+
+* Although a few researchers have presented a sample of their systems’ output and the corresponding gold keyphrases to show the differences between them, a systematic analysis of the major types of errors made by state-of-the-art keyphrase extraction systems is missing. 
+* To fill this gap, we ran four keyphrase extrac- tion systems on four commonly-used datasets of varying sources. Specifically, we randomly selected 25 documents from each of these four datasets and manually analyzed the output of the four systems, including tf*idf, the most frequently used baseline, as well as three state-of-the- art keyphrase extractors, of which two are unsupervised 
+* Our analysis reveals that the errors fall into four major types, each of which contributes significantly to the overall errors made by the four systems, despite the fact that the contribution of each of these error types varies from system to system. 
+
+Overgeneration errors are a major type of precision error, contributing to 28–37% of the overall error. 
+* Overgeneration errors occur when a system correctly predicts a candidate as a keyphrase because it contains a word that appears frequently in the associated document, but at the same time erroneously outputs other candidates as keyphrases because they contain the same word. 
+    * As we can see, the word Olympic(s) has a significant presence in the document. Consequently, many systems not only correctly predict Olympics as a keyphrase, but also erroneously predict Olympic movement as a keyphrase, yielding overgeneration errors. 
+
+Infrequency errors are a major type of recall error contributing to 24–27% of the overall error. 
+* Infrequency errors occur when a system fails to identify a keyphrase owing to its infre- quent presence in the associated document 
+* Handling infrequency errors is a challenge because state-of-the-art keyphrase ex- tractors rarely predict candidates that appear only once or twice in a document. 
+
+Redundancy errors are a type of precision error contributing to 8–12% of the overall error.
+* Redundancy errors occur when a system correctly identifies a candidate as a keyphrase, but at the same time outputs a semantically equivalent candidate (e.g., its alias) as a keyphrase. 
+* Nevertheless, some researchers may argue that a system should not be penalized for redundancy errors because the extracted candidates are in fact keyphrases.
+
+Evaluation errors are a type of recall error contributing to 7–10% of the overall error. 
+* An evaluation error occurs when a system outputs a candidate that is semantically equivalent to a gold keyphrase, but is considered erroneous by a scoring program because of its failure to recognize that the predicted phrase and the corresponding gold keyphrase are semantically equivalent. 
+* In other words, an evaluation error is not an error made by a keyphrase extractor, but an error due to the naivety of a scoring program. 
+
+
+
+Recommendations 
+
+We recommend that background knowledge be extracted from external lexical databases (e.g., YAGO2 , Freebase , BabelNet) to address the four types of errors discussed above. 
+
+
+
+Conclusion and Future Directions 
+
+1. Incorporating background knowledge. 
+2. Handling long documents. 
+3. Improving evaluation schemes. 
+
+
+
